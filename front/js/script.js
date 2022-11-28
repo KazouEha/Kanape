@@ -1,8 +1,10 @@
 getAllProducts();
 
+const itemsContainer = document.getElementById("items");
+const url = "http://localhost:3000/api/products";
+
 //Fonction d'initialisation de la page, récupération de tous les canapés sur l'api et mise en page
 function getAllProducts(url){
-    var url = "http://localhost:3000/api/products";
     
     window.fetch(url).then(function(response) {
         return response.json();
@@ -18,7 +20,6 @@ function getAllProducts(url){
 // Rajout de l'addevent listener et requete pour passer au panier
 function afficheAllCanape(data){
     console.log("afficheallcanape",data);
-    var itemsContainer = document.getElementById("items");
     console.log("id", itemsContainer);
     data.forEach(canape => {
         constructionArticleCanape(itemsContainer, canape);
@@ -29,19 +30,26 @@ function afficheAllCanape(data){
 function constructionArticleCanape(itemsContainer, canape){
     console.log("itemscontainer", itemsContainer);
     console.log("canape", canape);
-    var lienCanape = document.createElement("a");
-    var articleCanape = document.createElement("article");
-    var imgCanape = document.createElement("img");
-    var nomCanape = document.createElement("h3");
-    var descriptionCanape = document.createElement("p");
-    lienCanape.dataset.idCanape = canape._id;
-    nomCanape.innerHTML = canape.name;
-    descriptionCanape.innerHTML = canape.description;
-    imgCanape.setAttribute("src", canape.imageUrl)
-    imgCanape.setAttribute("alt", canape.altTxt)
-    itemsContainer.appendChild(lienCanape);
-    lienCanape.appendChild(articleCanape);
-    articleCanape.appendChild(imgCanape);
-    articleCanape.appendChild(nomCanape);
-    articleCanape.appendChild(descriptionCanape);
+
+    var img = document.createElement("img");
+    img.setAttribute("src", canape.imageUrl)
+    img.setAttribute("alt", canape.altTxt)
+    
+    var nom = document.createElement("h3");
+    nom.innerHTML = canape.name;
+
+    var description = document.createElement("p");
+    description.innerHTML = canape.description;
+    
+    var article = document.createElement("article");
+    article.appendChild(img);
+    article.appendChild(nom);
+    article.appendChild(description);
+    
+    let lien = document.createElement("a");
+    lien.dataset.idCanape = canape._id;
+    lien.setAttribute("href", "http://localhost:3000/api/product?="+canape._id )
+    lien.appendChild(article);
+
+    itemsContainer.appendChild(lien);
 }
