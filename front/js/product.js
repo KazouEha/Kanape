@@ -4,19 +4,29 @@ const id = param.get("id");
 const cart = [];
 document.getElementById("addToCart").addEventListener("click", function(){
     
-    var product = JSON.stringify({
+    var product = {
         "colors" : document.getElementById("colors").value,
         "quantity" : document.getElementById("quantity").value,
         "id_canape" : id,
-    });
+    };
     if(window.localStorage.length === null){
         cart.push(product);
         window.localStorage.setItem("cart", cart);
         console.log("un seul", cart);
     }else{
-        let panier = window.localStorage.getItem("cart");
-        cart.push(panier);
-        cart.push(product);
+        let products = window.localStorage.getItem("cart");
+        products.forEach(item => {
+            item = JSON.parse(item);
+            if(item.id_canape === product.id_canape){
+                if(item.colors === product.colors){
+                    item.quantity = intval(item.quantity) + intval(product.quantity);
+                    cart.push(JSON.stringify(item));
+                }
+            }else{
+                cart.push(JSON.stringify(item));
+                cart.push(JSON.stringify(product));
+            }
+        });
         console.log("tableau", cart);
     }
     // window.location.href = "./cart.html";
