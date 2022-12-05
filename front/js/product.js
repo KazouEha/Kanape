@@ -2,17 +2,24 @@ const url = window.location.search;
 const param = new URLSearchParams(url);
 const id = param.get("id");
 const cart = [];
-
 document.getElementById("addToCart").addEventListener("click", function(){
     
-    var product = {
+    var product = JSON.stringify({
         "colors" : document.getElementById("colors").value,
         "quantity" : document.getElementById("quantity").value,
         "id_canape" : id,
+    });
+    if(window.localStorage.length === null){
+        cart.push(product);
+        window.localStorage.setItem("cart", cart);
+        console.log("un seul", cart);
+    }else{
+        let panier = window.localStorage.getItem("cart");
+        cart.push(panier);
+        cart.push(product);
+        console.log("tableau", cart);
     }
-    cart.push(product);
-    window.localStorage.setItem("cart",cart);
-    window.location.href = "./cart.html";
+    // window.location.href = "./cart.html";
 });
 
 getProduct(id);
