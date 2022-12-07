@@ -1,39 +1,55 @@
 const url = window.location.search;
 const param = new URLSearchParams(url);
 const id = param.get("id");
-const cart = [];
-document.getElementById("addToCart").addEventListener("click", function(){
-    
-    var product = {
-        "colors" : document.getElementById("colors").value,
-        "quantity" : document.getElementById("quantity").value,
-        "id_canape" : id,
-    };
-    if(window.localStorage.length === null){
-        cart.push(product);
-        window.localStorage.setItem("cart", cart);
-        console.log("un seul", cart);
-    }else{
-        let products = window.localStorage.getItem("cart");
-        products.forEach(item => {
-            item = JSON.parse(item);
-            if(item.id_canape === product.id_canape){
-                if(item.colors === product.colors){
-                    item.quantity = intval(item.quantity) + intval(product.quantity);
-                    cart.push(JSON.stringify(item));
-                }
-            }else{
-                cart.push(JSON.stringify(item));
-                cart.push(JSON.stringify(product));
-            }
-        });
-        console.log("tableau", cart);
-    }
-    // window.location.href = "./cart.html";
-});
-
 getProduct(id);
 
+document.getElementById("addToCart").addEventListener("click", function(){
+    
+    var kanape = {
+        "colors" : document.getElementById("colors").value,
+        "quantity" : document.getElementById("quantity").value,
+        "id_canape" : id
+    };
+    var cart = getCart();
+    console.log("getcart", cart);
+    addToCart(cart, kanape);
+    console.log("pret",cart);
+    let command = JSON.stringify(cart);
+    window.localStorage.setItem("cart", command);
+    window.location.href = "./cart.html";
+});
+
+function addToCart(cart, kanape){
+    let idInCart = cart.find(canap => canap.id_canape == kanape.id_canape);
+    if(idInCart){
+        if(idInCart.colors === kanape.colors){
+            idInCart.quantity = parseInt(idInCart.quantity) + parseInt(kanape.quantity);
+            return cart;
+        } else {
+            cart.push(kanape);
+            return cart;
+        }
+    }else{
+        cart.push(kanape);
+    }
+}
+
+/**
+ * Récupère les données du panier dans localstorage ou crée un tableau si localstorage est null
+ * @returns 
+ */
+function getCart(){
+    if(window.localStorage.getItem("cart") == null){
+        return [];
+    }else{
+        return JSON.parse(window.localStorage.getItem("cart"));
+    }
+}
+
+/**
+ * Recupère les données du canapé auprès de l'API sur la page produit
+ * @param {*} id 
+ */
 function getProduct(id) {
       window.fetch("http://localhost:3000/api/products/"+id).then(function(response) {
         return response.json();
@@ -44,6 +60,10 @@ function getProduct(id) {
       });
 }
 
+/**
+ * Affiche le canapé sur la page
+ * @param {*} data 
+ */
 function loadDataProduct(data){
     
     let image = document.createElement("img");
