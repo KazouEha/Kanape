@@ -1,5 +1,10 @@
 const itemsContainer = document.getElementById("items");
 const url = "http://localhost:3000/api/products";
+const cart = window.localStorage.getItem("cart");
+if(cart !== null){
+  console.log("panier", cart);
+}
+
 
 getAllProducts(url);
 

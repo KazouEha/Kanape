@@ -11,12 +11,11 @@ document.getElementById("addToCart").addEventListener("click", function(){
         "id_canape" : id
     };
     var cart = getCart();
-    console.log("getcart", cart);
     addToCart(cart, kanape);
     console.log("pret",cart);
     let command = JSON.stringify(cart);
     window.localStorage.setItem("cart", command);
-    window.location.href = "./cart.html";
+    window.location.href = "./index.html";
 });
 
 function addToCart(cart, kanape){
