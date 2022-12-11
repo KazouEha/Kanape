@@ -1,8 +1,10 @@
+const section = document.getElementById("cart__items");
 var cart = window.localStorage.getItem("cart");
 if(cart === null){
-    console.log("encore null");
+    var vide = document.createElement("h2");
+    vide.innerHTML = "Votre panier est vide";
+    section.appendChild(vide);
 }else{
-    console.log(JSON.parse(cart));
     initCart(JSON.parse(cart));
 }
 
@@ -11,28 +13,21 @@ if(cart === null){
  * @param {*} cart 
  */
 function initCart(cart){
-    const section = document.getElementById("cart__items");
     cart.forEach(line => {
-        getCanap(line.id_canape).then(function(data){
-            console.log("canap ça va jusque la", data);
-            constructLineCart(line, data);
-        }).then(function(articlePanier){
-            section.appendChild(articlePanier);
-        }).catch(function(){
-            console.log("c'est pas ça");
-        });
+        getCanap(line.id_canape, line);
     });
 }
 
 /**
- * Getting kanap from the api
+ * Getting kanapes from API
  * @param {*} id 
+ * @param {*} line 
  */
-function getCanap(id){
+function getCanap(id, line){
     window.fetch("http://localhost:3000/api/products/"+id).then(function(response) {
         return response.json();
       }).then(function(data) {
-        return data;
+        constructLineCart(data, line);
       }).catch(function() {
         console.log("Pas de canapé");
       });
@@ -44,7 +39,7 @@ function getCanap(id){
  * @param {*} canap 
  * @returns 
  */
- async function constructLineCart(line, canap){
+function constructLineCart(canap, line){
     let article = document.createElement("article");
     article.dataset.id = line.id_canape;
     article.dataset.color = line.id_colors;
@@ -110,6 +105,7 @@ function getCanap(id){
 
     article.appendChild(div_img);
     article.appendChild(div_content);
-    return article;
+    
+    section.appendChild(article);
 
 }
