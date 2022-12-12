@@ -9,7 +9,10 @@ if(cart !== null){
 getAllProducts(url);
 
 
-//Fonction d'initialisation de la page, récupération de tous les canapés sur l'api et mise en page
+/**
+ * get products from the API
+ * @param {*} url 
+ */
 function getAllProducts(url){
     
     window.fetch(url).then(function(response) {
@@ -22,8 +25,10 @@ function getAllProducts(url){
       });
 }
 
-// Fonction de mise en page grâce aux données récupérées sur l'API
-// Rajout de l'addevent listener et requete pour passer au panier
+/**
+ * Initialisation for the article construction
+ * @param {*} data 
+ */
 function showAllCanape(data){
     console.log("showAllCanape",data);
     console.log("id", itemsContainer);
@@ -32,7 +37,11 @@ function showAllCanape(data){
     });
 }
    
-//// Mise en forme du dom en reprenant l'exemple d'article sur index.html
+/**
+ * Build articles for all the canapes
+ * @param {*} itemsContainer 
+ * @param {*} canape 
+ */
 function constructArticleCanape(itemsContainer, canape){
     console.log("itemscontainer", itemsContainer);
     console.log("canape", canape);

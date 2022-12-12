@@ -3,6 +3,8 @@ const param = new URLSearchParams(url);
 const id = param.get("id");
 getProduct(id);
 
+
+//event on click to add element to cart
 document.getElementById("addToCart").addEventListener("click", function(){
     
     var kanape = {
@@ -18,6 +20,12 @@ document.getElementById("addToCart").addEventListener("click", function(){
     window.location.href = "./index.html";
 });
 
+/**
+ * Add the products chosen to the cart item and verifies quantities
+ * @param {*} cart 
+ * @param {*} kanape 
+ * @returns 
+ */
 function addToCart(cart, kanape){
     let idInCart = cart.find(canap => canap.id_canape == kanape.id_canape);
     if(idInCart){
@@ -34,7 +42,7 @@ function addToCart(cart, kanape){
 }
 
 /**
- * Récupère les données du panier dans localstorage ou crée un tableau si localstorage est null
+ * Retrieve datas from localstorage
  * @returns 
  */
 function getCart(){
@@ -46,7 +54,7 @@ function getCart(){
 }
 
 /**
- * Recupère les données du canapé auprès de l'API sur la page produit
+ * Retrieve data from API
  * @param {*} id 
  */
 function getProduct(id) {
@@ -60,7 +68,7 @@ function getProduct(id) {
 }
 
 /**
- * Affiche le canapé sur la page
+ * Show item chosen on the page
  * @param {*} data 
  */
 function loadDataProduct(data){

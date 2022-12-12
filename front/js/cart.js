@@ -105,7 +105,6 @@ function constructLineCart(canap, line){
 
     article.appendChild(div_img);
     article.appendChild(div_content);
-    
-    section.appendChild(article);
 
+    section.appendChild(article);
 }
