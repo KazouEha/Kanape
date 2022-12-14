@@ -1,4 +1,8 @@
 const section = document.getElementById("cart__items");
+const totalPrice = document.getElementById("totalPrice");
+const totalQuantity = document.getElementById("totalQuantity");
+const totalPriceArray = [];
+const totalQuantityArray = [];
 var cart = window.localStorage.getItem("cart");
 if(cart === null){
     var vide = document.createElement("h2");
@@ -7,7 +11,9 @@ if(cart === null){
 }else{
     initCart(JSON.parse(cart));
 }
-
+var total = 0;
+showTotal(totalPriceArray, totalPrice);
+showTotal(totalQuantityArray, totalQuantity);
 /**
  * Initialisation of the cart's lines
  * @param {*} cart 
@@ -18,6 +24,14 @@ function initCart(cart){
     });
 }
 
+function showTotal(totalArray, totalPlace){
+    console.log("longueur", totalArray);
+    totalArray.forEach(element => {
+        console.log("element", element);
+    });
+    console.log("total", total);
+    totalPlace.innerHTML = total;
+}
 /**
  * Getting kanapes from API
  * @param {*} id 
@@ -62,6 +76,7 @@ function constructLineCart(canap, line){
     let price = document.createElement("p");
     let priceQuantity = parseInt(line.quantity) * parseInt(canap.price);
     price.innerHTML = priceQuantity + " €";
+    totalPriceArray.push(parseInt(priceQuantity));
 
     let label_quantity = document.createElement("p");
     label_quantity.innerHTML = "Qté :";
@@ -79,6 +94,16 @@ function constructLineCart(canap, line){
     input_quantity.setAttribute("min", 1);
     input_quantity.setAttribute("max", 100);
     input_quantity.setAttribute("value", line.quantity);
+    totalQuantityArray.push(parseInt(line.quantity));
+    input_quantity.addEventListener("change", function(){
+        let kanape = {
+            "colors" : line.colors,
+            "quantity" : input_quantity.value,
+            "id_canape" : line.id_canape
+        }
+        modifyCart(JSON.parse(cart),kanape);
+        location.reload();
+    })
 
     let div_settings_quantity = document.createElement("div");
     div_settings_quantity.classList.add("cart__item__content__settings__quantity");
@@ -107,4 +132,15 @@ function constructLineCart(canap, line){
     article.appendChild(div_content);
 
     section.appendChild(article);
+}
+
+function modifyCart(cart, kanape){
+    let idInCart = cart.find(canap => canap.id_canape == kanape.id_canape);
+    if(idInCart){
+        if(idInCart.colors === kanape.colors){
+            idInCart.quantity = kanape.quantity;
+            window.localStorage.setItem("cart", JSON.stringify(cart));
+            return cart;
+        }
+    }
 }
