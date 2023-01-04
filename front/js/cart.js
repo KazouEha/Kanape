@@ -96,8 +96,7 @@ document.getElementById("order").addEventListener("click", function(e) {
 
 /**
  * 
- * @param {*} email 
- * @returns 
+ * Collection of regex to verify inputs 
  */
 function isValidEmail(email) {
     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
@@ -143,7 +142,7 @@ async function getCanap(id, line){
 }
 
 /**
- * End of the initialisation
+ * End of the initialisation with a delay
  */
 function endInitCart(){
     setTimeout(() => {
