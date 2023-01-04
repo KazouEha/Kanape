@@ -3,48 +3,70 @@ const totalPrice = document.getElementById("totalPrice");
 const totalQuantity = document.getElementById("totalQuantity");
 const totalPriceArray = [];
 const totalQuantityArray = [];
-var cart = window.localStorage.getItem("cart");
+const cart = JSON.parse(window.localStorage.getItem("cart"));
+console.log(cart);
 if(cart === null){
     var vide = document.createElement("h2");
     vide.innerHTML = "Votre panier est vide";
     section.appendChild(vide);
 }else{
-    initCart(JSON.parse(cart));
+    initCart();
+    endInitCart();
 }
-var total = 0;
-showTotal(totalPriceArray, totalPrice);
-showTotal(totalQuantityArray, totalQuantity);
+
+document.getElementById("order").onclick = function(){
+}
 /**
  * Initialisation of the cart's lines
  * @param {*} cart 
  */
-function initCart(cart){
+function initCart(){
     cart.forEach(line => {
         getCanap(line.id_canape, line);
     });
 }
 
-function showTotal(totalArray, totalPlace){
-    console.log("longueur", totalArray);
-    totalArray.forEach(element => {
-        console.log("element", element);
-    });
-    console.log("total", total);
-    totalPlace.innerHTML = total;
-}
 /**
  * Getting kanapes from API
  * @param {*} id 
  * @param {*} line 
  */
-function getCanap(id, line){
-    window.fetch("http://localhost:3000/api/products/"+id).then(function(response) {
-        return response.json();
-      }).then(function(data) {
+async function getCanap(id, line){
+    try {
+        let response = await fetch("http://localhost:3000/api/products/"+id);
+        let data = await response.json();
         constructLineCart(data, line);
-      }).catch(function() {
-        console.log("Pas de canapé");
-      });
+    } catch (error) {
+        console.log("pas de canape");
+    }
+}
+
+/**
+ * End of the initialisation
+ */
+function endInitCart(){
+    setTimeout(() => {
+        calculateTotal(totalPriceArray, totalPrice);
+        calculateTotal(totalQuantityArray, totalQuantity);
+        deleteFromCart(cart);
+    }, 2000);
+}
+
+/**
+ * Calculate price & quantity total and show it on the page
+ * @param {*} total_Array 
+ * @param {*} totalPlace 
+ */
+function calculateTotal(total_Array, totalPlace){
+    let total = 0;
+    for(let i = 0; i < total_Array.length; i++ ){
+        if(total_Array[i].value){
+            total += parseInt(total_Array[i].value);
+        }else{
+            total += parseInt(total_Array[i]);
+        }
+    }
+    totalPlace.innerHTML = total;
 }
 
 /**
@@ -56,7 +78,7 @@ function getCanap(id, line){
 function constructLineCart(canap, line){
     let article = document.createElement("article");
     article.dataset.id = line.id_canape;
-    article.dataset.color = line.id_colors;
+    article.dataset.color = line.colors;
     article.classList.add("cart__item");
 
     let img = document.createElement("img");
@@ -75,8 +97,8 @@ function constructLineCart(canap, line){
 
     let price = document.createElement("p");
     let priceQuantity = parseInt(line.quantity) * parseInt(canap.price);
+    totalPriceArray.push(priceQuantity);
     price.innerHTML = priceQuantity + " €";
-    totalPriceArray.push(parseInt(priceQuantity));
 
     let label_quantity = document.createElement("p");
     label_quantity.innerHTML = "Qté :";
@@ -94,14 +116,14 @@ function constructLineCart(canap, line){
     input_quantity.setAttribute("min", 1);
     input_quantity.setAttribute("max", 100);
     input_quantity.setAttribute("value", line.quantity);
-    totalQuantityArray.push(parseInt(line.quantity));
+    totalQuantityArray.push(line.quantity);
     input_quantity.addEventListener("change", function(){
         let kanape = {
             "colors" : line.colors,
             "quantity" : input_quantity.value,
             "id_canape" : line.id_canape
         }
-        modifyCart(JSON.parse(cart),kanape);
+        modifyCart(cart,kanape);
         location.reload();
     })
 
@@ -111,6 +133,7 @@ function constructLineCart(canap, line){
     div_settings_quantity.appendChild(input_quantity);
 
     let link_delete = document.createElement("p");
+    link_delete.style.cursor = "pointer";
     link_delete.classList.add("deleteItem");
     link_delete.innerHTML = "Supprimer";
 
@@ -134,6 +157,13 @@ function constructLineCart(canap, line){
     section.appendChild(article);
 }
 
+
+/**
+ * modify cart and save it
+ * @param {*} cart 
+ * @param {*} kanape 
+ * @returns 
+ */
 function modifyCart(cart, kanape){
     let idInCart = cart.find(canap => canap.id_canape == kanape.id_canape);
     if(idInCart){
@@ -143,4 +173,28 @@ function modifyCart(cart, kanape){
             return cart;
         }
     }
+}
+
+/**
+ * delete from cart and from localstorage item when click
+ * @param {*} cart 
+ */
+function deleteFromCart(){
+    tableDelete = document.getElementsByClassName("deleteItem");
+    for(let deletion of tableDelete){
+        deletion.addEventListener("click" , (event) => {
+            event.preventDefault();
+            let articleDeletion = event.target.closest("article");
+            let IdToDelete = event.target.closest("article").dataset.id;
+            let colorToDelete = event.target.closest("article").dataset.color;
+            let idInCart = cart.find(item => item.id_canape === IdToDelete && item.colors === colorToDelete);
+            if(idInCart){
+                    articleDeletion.remove();
+                    let updatedCart = cart.filter(item => item.id_canape !== IdToDelete || item.colors !== colorToDelete);
+                    console.log("avant set",cart);
+                    window.localStorage.setItem("cart", JSON.stringify(updatedCart));
+                    location.reload();
+                }
+            })
+        }
 }

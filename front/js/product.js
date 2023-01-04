@@ -9,38 +9,35 @@ getProduct(id);
 addToCartBtn.addEventListener("click", function(){
     const color = document.getElementById("colors");
     const quantity = document.getElementById("quantity");
-    if(color.value === "" || quantity.value === ""){
+    const btn = document.getElementsByClassName("item__content")[0];
+    if(color.value !== ""){
+        if(quantity.value !== "0"){
+            let kanape = {
+                "colors" : color.value,
+                "quantity" : quantity.value,
+                "id_canape" : id
+            };
+    
+            let cart = getCart();
+            addToCart(cart, kanape);
+            console.log("pret",cart);
+            let command = JSON.stringify(cart);
+            window.localStorage.setItem("cart", command);
+            let msgValidation = document.createElement("div");
+            msgValidation.style.color = "green";
+            msgValidation.style.fontWeight = "bold";
+            msgValidation.style.margin = "auto";
+            msgValidation.innerHTML = "Votre produit a bien été ajouté au panier";
+            btn.appendChild(msgValidation);
+        }
+    }else{
 
-        let btn = document.getElementsByClassName("item__content")[0];
         msgErreur = document.createElement("div");
         msgErreur.style.color = "red";
         msgErreur.style.fontWeight = "bold";
         msgErreur.style.margin = "auto";
         msgErreur.innerHTML = "Veuillez choisir une couleur et une quantité";
         btn.appendChild(msgErreur);
-
-       
-
-    }else{
-
-        let kanape = {
-            "colors" : color.value,
-            "quantity" : quantity.value,
-            "id_canape" : id
-        };
-
-        let cart = getCart();
-        addToCart(cart, kanape);
-        console.log("pret",cart);
-        let command = JSON.stringify(cart);
-        window.localStorage.setItem("cart", command);
-        let btn = document.getElementsByClassName("item__content")[0];
-        let msgValidation = document.createElement("div");
-        msgValidation.style.color = "green";
-        msgValidation.style.fontWeight = "bold";
-        msgValidation.style.margin = "auto";
-        msgValidation.innerHTML = "Votre produit a bien été ajouté au panier";
-        btn.appendChild(msgValidation);
     }
 });
 
@@ -73,6 +70,7 @@ function getCart(){
     if(window.localStorage.getItem("cart") == null){
         return [];
     }else{
+        console.log("cart", JSON.parse(window.localStorage.getItem("cart")));
         return JSON.parse(window.localStorage.getItem("cart"));
     }
 }
