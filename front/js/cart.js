@@ -14,8 +14,109 @@ if(cart === null){
     endInitCart();
 }
 
-document.getElementById("order").onclick = function(){
+/**
+ * onclick sur la commande pour valider le formulaire et enregistrer le panier
+ * dans la requete
+ */
+document.getElementById("order").addEventListener("click", function(e) {
+    
+    e.preventDefault();
+
+    const contact = {
+        firstName: document.getElementById("firstName").value,
+        lastName: document.getElementById("lastName").value,
+        address: document.getElementById("address").value,
+        city: document.getElementById("city").value,
+        email: document.getElementById("email").value
+    }
+
+    const articles = document.querySelectorAll("[data-id]");
+    const products = [];
+    articles.forEach(element => {
+        products.push(element.dataset.id);
+    });
+
+    let form = false;
+    if(isValidLetterString(contact.firstName) === true && firstName !== ""){
+        form = true;
+    }else{
+        form = false;
+        let errorFirstName = document.getElementById("firstNameErrorMsg");
+        errorFirstName.innerHTML = "Le prénom n'est pas au bon format"
+    }
+    if(isValidLetterString(contact.lastName) === true && lastName !== ""){
+        form = true;
+    }else{
+        form = false;
+        let errorLastName = document.getElementById("lastNameErrorMsg");
+        errorLastName.innerHTML = "Le nom n'est pas au bon format"
+    }
+    if(isValidString(contact.address) === true && address !== ""){
+        form = true;
+    }else{
+        form = false;
+        let errorMail = document.getElementById("addressErrorMsg");
+        errorMail.innerHTML = "L'adresse n'a pas le bon format"
+    }
+    if(isValidLetterString(contact.city) === true && city !== ""){
+        form = true;
+    }else{
+        form = false;
+        let errorCity = document.getElementById("cityErrorMsg");
+        errorCity.innerHTML = "La ville n'est pas au bon format"
+    }
+    if(isValidEmail(contact.email) === true && email !== ""){
+        form = true;
+    }else{
+        form = false;
+        let errorMail = document.getElementById("emailErrorMsg");
+        errorMail.innerHTML = "L'adresse mail n'a pas le bon format"
+    }
+
+    if(form === true){
+        fetch("http://localhost:3000/api/products/order", {
+            method: 'POST',
+            headers: {
+            'Accept' : 'application/json',
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({contact: contact, products: products})
+        })
+        .then(response => response.json())
+        .then(data => {
+            window.localStorage.clear();
+            window.location.href = "confirmation.html?orderId="+data.orderId;
+        })
+        .catch(error => {
+            console.log(error);
+        });
+    }
+    
+})
+
+/**
+ * 
+ * @param {*} email 
+ * @returns 
+ */
+function isValidEmail(email) {
+    const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    console.log("resultat", regex.test(email));
+    return regex.test(email);
+  }
+
+function isValidLetterString(string){
+    const regex = /^[a-zA-Z]{1,20}$/;
+    console.log("resultat", regex.test(string));
+    return regex.test(string);
 }
+
+function isValidString(string){
+    const regex = /^[a-zA-Z0-9]+$/;
+    console.log("resultat", regex.test(string));
+    return regex.test(string);
+}
+
 /**
  * Initialisation of the cart's lines
  * @param {*} cart 
@@ -198,3 +299,5 @@ function deleteFromCart(){
             })
         }
 }
+
+
