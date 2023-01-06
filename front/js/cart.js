@@ -9,9 +9,11 @@ if(cart === null){
     var vide = document.createElement("h2");
     vide.innerHTML = "Votre panier est vide";
     section.appendChild(vide);
+    let formInvisible = document.getElementsByClassName("cart__order")[0];
+    formInvisible.style.display = "none";
 }else{
     initCart();
-    endInitCart();
+    // endInitCart();
 }
 
 /**
@@ -36,41 +38,43 @@ document.getElementById("order").addEventListener("click", function(e) {
         products.push(element.dataset.id);
     });
 
-    let form = false;
+    let form = true;
+    
+    let errorFirstName = document.getElementById("firstNameErrorMsg");
+    let errorLastName = document.getElementById("lastNameErrorMsg");
+    let errorAddress = document.getElementById("addressErrorMsg");
+    let errorCity = document.getElementById("cityErrorMsg");
+    let errorMail = document.getElementById("emailErrorMsg");
+
     if(isValidLetterString(contact.firstName) === true && firstName !== ""){
-        form = true;
+        errorFirstName.innerHTML = "";
     }else{
         form = false;
-        let errorFirstName = document.getElementById("firstNameErrorMsg");
-        errorFirstName.innerHTML = "Le prénom n'est pas au bon format"
+        errorFirstName.innerHTML = "Le prénom n'est pas au bon format";
     }
     if(isValidLetterString(contact.lastName) === true && lastName !== ""){
-        form = true;
+        errorLastName.innerHTML = "";
     }else{
         form = false;
-        let errorLastName = document.getElementById("lastNameErrorMsg");
-        errorLastName.innerHTML = "Le nom n'est pas au bon format"
+        errorLastName.innerHTML = "Le nom n'est pas au bon format";
     }
     if(isValidString(contact.address) === true && address !== ""){
-        form = true;
+        errorAddress.innerHTML = "";
     }else{
         form = false;
-        let errorMail = document.getElementById("addressErrorMsg");
-        errorMail.innerHTML = "L'adresse n'a pas le bon format"
+        errorAddress.innerHTML = "L'adresse n'a pas le bon format";
     }
     if(isValidLetterString(contact.city) === true && city !== ""){
-        form = true;
+        errorCity.innerHTML = "";
     }else{
         form = false;
-        let errorCity = document.getElementById("cityErrorMsg");
-        errorCity.innerHTML = "La ville n'est pas au bon format"
+        errorCity.innerHTML = "La ville n'est pas au bon format";
     }
     if(isValidEmail(contact.email) === true && email !== ""){
-        form = true;
+        errorMail.innerHTML = "";
     }else{
         form = false;
-        let errorMail = document.getElementById("emailErrorMsg");
-        errorMail.innerHTML = "L'adresse mail n'a pas le bon format"
+        errorMail.innerHTML = "L'adresse mail n'a pas le bon format";
     }
 
     if(form === true){
@@ -100,19 +104,16 @@ document.getElementById("order").addEventListener("click", function(e) {
  */
 function isValidEmail(email) {
     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-    console.log("resultat", regex.test(email));
     return regex.test(email);
   }
 
 function isValidLetterString(string){
     const regex = /^[a-zA-Z]{1,20}$/;
-    console.log("resultat", regex.test(string));
     return regex.test(string);
 }
 
 function isValidString(string){
     const regex = /^[a-zA-Z0-9]+$/;
-    console.log("resultat", regex.test(string));
     return regex.test(string);
 }
 
@@ -120,10 +121,14 @@ function isValidString(string){
  * Initialisation of the cart's lines
  * @param {*} cart 
  */
-function initCart(){
-    cart.forEach(line => {
-        getCanap(line.id_canape, line);
-    });
+async function initCart(){
+    // cart.forEach(line => {
+        
+    // });
+    for(let line in cart){
+       await getCanap(cart[line].id_canape, cart[line]);
+    }
+    endInitCart();
 }
 
 /**
@@ -145,11 +150,9 @@ async function getCanap(id, line){
  * End of the initialisation with a delay
  */
 function endInitCart(){
-    setTimeout(() => {
-        calculateTotal(totalPriceArray, totalPrice);
-        calculateTotal(totalQuantityArray, totalQuantity);
-        deleteFromCart(cart);
-    }, 2000);
+    calculateTotal(totalPriceArray, totalPrice);
+    calculateTotal(totalQuantityArray, totalQuantity);
+    deleteFromCart(cart);
 }
 
 /**
@@ -291,7 +294,6 @@ function deleteFromCart(){
             if(idInCart){
                     articleDeletion.remove();
                     let updatedCart = cart.filter(item => item.id_canape !== IdToDelete || item.colors !== colorToDelete);
-                    console.log("avant set",cart);
                     window.localStorage.setItem("cart", JSON.stringify(updatedCart));
                     location.reload();
                 }
