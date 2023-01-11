@@ -1,8 +1,9 @@
 const url = window.location.search;
 const param = new URLSearchParams(url);
 const id = param.get("id");
+const urlProduct = "http://localhost:3000/api/products/"+id;
 const addToCartBtn = document.getElementById("addToCart");
-getProduct(id);
+getData(urlProduct, loadDataProduct);
 
 
 //event on click to add element to cart
@@ -10,34 +11,26 @@ addToCartBtn.addEventListener("click", function(){
     const color = document.getElementById("colors");
     const quantity = document.getElementById("quantity");
     const btn = document.getElementsByClassName("item__content")[0];
-    if(color.value !== ""){
-        if(quantity.value !== "0"){
-            let kanape = {
-                "colors" : color.value,
-                "quantity" : quantity.value,
-                "id_canape" : id
-            };
-    
-            let cart = getCart();
-            addToCart(cart, kanape);
-            console.log("pret",cart);
-            let command = JSON.stringify(cart);
-            window.localStorage.setItem("cart", command);
-            let msgValidation = document.createElement("div");
-            msgValidation.style.color = "green";
-            msgValidation.style.fontWeight = "bold";
-            msgValidation.style.margin = "auto";
-            msgValidation.innerHTML = "Votre produit a bien été ajouté au panier";
-            btn.appendChild(msgValidation);
-        }
+    if(color.value !== "" && quantity.value !== "0" && quantity.value !== ""){
+        let kanape = {
+            "colors" : color.value,
+            "quantity" : quantity.value,
+            "id_canape" : id
+        };
+        let cart = getCart();
+        addToCart(cart, kanape);
+        console.log("pret",cart);
+        let command = JSON.stringify(cart);
+        window.localStorage.setItem("cart", command);
+        console.log("cart rempli", window.localStorage.getItem("cart"));
+        callbackMsg("succes", "Votre produit a bien été ajouté au panier");
     }else{
-
-        msgErreur = document.createElement("div");
-        msgErreur.style.color = "red";
-        msgErreur.style.fontWeight = "bold";
-        msgErreur.style.margin = "auto";
-        msgErreur.innerHTML = "Veuillez choisir une couleur et une quantité";
-        btn.appendChild(msgErreur);
+        if(color.value === ""){
+            callbackMsg("error", "Choisissez une couleur");
+        }
+        if(quantity.value === "" || quantity.value === "0"){
+            callbackMsg("error", "Choisissez une quantité");
+        }
     }
 });
 
@@ -75,19 +68,24 @@ function getCart(){
     }
 }
 
+
 /**
- * Retrieve data from API
- * @param {*} id 
+ * Retrieve data from API to show product
+ * 
+ * @param {*} url = API's url + product's id
+ * @param {*} callback = function to build article on the page
  */
-function getProduct(id) {
-      window.fetch("http://localhost:3000/api/products/"+id).then(function(response) {
-        return response.json();
-      }).then(function(data) {
-        loadDataProduct(data);
-      }).catch(function() {
-        console.log("Pas de canapé");
-      });
-}
+async function getData(url, callback){
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      callback(data);
+    }
+    catch (error) {
+      console.log(error);
+      return [];
+    }
+  }
 
 /**
  * Show item chosen on the page
@@ -117,4 +115,28 @@ function loadDataProduct(data){
             option.innerHTML = color;
             colors.appendChild(option);
         });
+}
+
+/**
+ * Function to signify by message if a product has been added to the cart or not
+ * 
+ * @param {*} type 
+ * @param {*} message 
+ */
+function callbackMsg(type, message){
+    const btn = document.getElementsByClassName("item__content")[0];
+    const color = type === "error" ? "red" : "green";
+    let cbMsg = document.getElementById("callback-message");
+
+    if(cbMsg !== null){
+        cbMsg.remove();
+    }
+
+    cbMsg = document.createElement("div");
+    cbMsg.id = "callback-message";
+    cbMsg.style.color = color;
+    cbMsg.style.fontWeight = "bold";
+    cbMsg.style.margin = "auto";
+    cbMsg.innerHTML = message;
+    btn.appendChild(cbMsg);
 }

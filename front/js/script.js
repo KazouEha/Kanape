@@ -1,37 +1,33 @@
 const itemsContainer = document.getElementById("items");
 const url = "http://localhost:3000/api/products";
 const cart = window.localStorage.getItem("cart");
-if(cart !== null){
-  console.log("panier", cart);
-}
-
-
-getAllProducts(url);
+getDatas(url, showAllCanape);
 
 
 /**
- * get products from the API
+ * 
  * @param {*} url 
+ * @param {*} fonction 
+ * @returns 
  */
-function getAllProducts(url){
-    
-    window.fetch(url).then(function(response) {
-        return response.json();
-      }).then(function(data) {
-        console.log(data);
-        showAllCanape(data);
-      }).catch(function() {
-        console.log("Pas de canapé");
-      });
+async function getDatas(url, callback){
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    callback(data);
+  }
+  catch (error) {
+    console.log(error);
+    return [];
+  }
 }
 
 /**
  * Initialisation for the article construction
+ * 
  * @param {*} data 
  */
 function showAllCanape(data){
-    console.log("showAllCanape",data);
-    console.log("id", itemsContainer);
     data.forEach(canape => {
         constructArticleCanape(itemsContainer, canape);
     });
@@ -43,6 +39,7 @@ function showAllCanape(data){
  * @param {*} canape 
  */
 function constructArticleCanape(itemsContainer, canape){
+  
     console.log("itemscontainer", itemsContainer);
     console.log("canape", canape);
 

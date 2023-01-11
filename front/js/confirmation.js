@@ -1,4 +1,4 @@
-//récupération du parametre orderId dans l'URL et affichage dans la pastille correspondante
+//get parameter orderId in URL to get order confirmation from API
 const url = window.location.search;
 const param = new URLSearchParams(url);
 const orderId = param.get("orderId");
