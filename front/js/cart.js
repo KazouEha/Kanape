@@ -288,7 +288,6 @@ function constructLineCart(canap, line){
  */
 function modifyCart(cart, kanape){
     let idInCart = cart.find(canap => canap.id_canape == kanape.id_canape);
-    console.log("idInCart", idInCart )
     if(idInCart){
         if(idInCart.colors === kanape.colors){
             idInCart.quantity = kanape.quantity;

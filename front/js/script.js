@@ -39,9 +39,6 @@ function showAllCanape(data){
  * @param {*} canape 
  */
 function constructArticleCanape(itemsContainer, canape){
-  
-    console.log("itemscontainer", itemsContainer);
-    console.log("canape", canape);
 
     var img = document.createElement("img");
     img.setAttribute("src", canape.imageUrl)
