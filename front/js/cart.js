@@ -14,6 +14,9 @@ if(cart === null || cart.length === 0){
     let formInvisible = document.getElementsByClassName("cart__order")[0];
     formInvisible.style.display = "none";
 }else{
+    if(cart.length > 0){
+        cart.sort((a, b) => parseInt(a.id_canape) - parseInt(b.id_canape));
+    }
     initCart(endInitCart);
 }
 
@@ -78,7 +81,7 @@ document.getElementById("order").addEventListener("click", function(e) {
         errorMail.innerHTML = "L'adresse mail n'a pas le bon format";
     }
 
-    if(form === true){
+    if(form === true && products.length > 0){
 
         let param = {
             method: 'POST',
@@ -94,16 +97,22 @@ document.getElementById("order").addEventListener("click", function(e) {
             console.log(e);
         }
     }
-    
+
 })
 
+/**
+ * get confirmation from API for the order
+ * 
+ * @param {*} data 
+ */
 function getConfirmation(data){
     window.localStorage.clear();
     window.location.href = "confirmation.html?orderId="+data.orderId;
 }
+
 /**
  * 
- * Collection of regex to verify inputs 
+ * Collection of regex to verify inputs values 
  */
 function isValidEmail(email) {
     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
@@ -142,7 +151,8 @@ async function initCart(callback){
  * 
  * @param {*} url = API's url + product's id
  * @param {*} callback = function to build article on the page
- * @param param_callback
+ * @param {*} param_callback = param for eventual callback function
+ * @param {*} param = param for eventual fetch's body
  */
 async function getData(url,  callback, param_callback = null, param = null){
     try {
@@ -271,10 +281,10 @@ function constructLineCart(canap, line){
 
 
 /**
- * modify cart and save it
+ * modify cart and save it and reinitialize cart
+ * 
  * @param {*} cart 
  * @param {*} kanape 
- * @returns 
  */
 function modifyCart(cart, kanape){
     let idInCart = cart.find(canap => canap.id_canape == kanape.id_canape);
@@ -289,7 +299,7 @@ function modifyCart(cart, kanape){
 }
 
 /**
- * delete from cart and from localstorage item when click
+ * delete from cart and from localstorage item when click then reinitialize cart
  * @param {*} cart 
  */
 function deleteFromCart(){
