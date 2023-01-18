@@ -19,10 +19,8 @@ addToCartBtn.addEventListener("click", function(){
         };
         let cart = getCart();
         addToCart(cart, kanape);
-        console.log("pret",cart);
         let command = JSON.stringify(cart);
         window.localStorage.setItem("cart", command);
-        console.log("cart rempli", window.localStorage.getItem("cart"));
         callbackMsg("succes", "Votre produit a bien été ajouté au panier");
     }else{
         if(color.value === ""){
@@ -63,7 +61,6 @@ function getCart(){
     if(window.localStorage.getItem("cart") == null){
         return [];
     }else{
-        console.log("cart", JSON.parse(window.localStorage.getItem("cart")));
         return JSON.parse(window.localStorage.getItem("cart"));
     }
 }
