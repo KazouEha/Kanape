@@ -11,7 +11,7 @@ addToCartBtn.addEventListener("click", function(){
     const color = document.getElementById("colors");
     const quantity = document.getElementById("quantity");
     const btn = document.getElementsByClassName("item__content")[0];
-    if(color.value !== "" && quantity.value !== "0" && quantity.value !== ""){
+    if(color.value !== "" && quantity.value !== "0" && quantity.value !== "" && parseInt(quantity.value) > 0){
         let kanape = {
             "colors" : color.value,
             "quantity" : quantity.value,
@@ -26,8 +26,8 @@ addToCartBtn.addEventListener("click", function(){
         if(color.value === ""){
             callbackMsg("error", "Choisissez une couleur");
         }
-        if(quantity.value === "" || quantity.value === "0"){
-            callbackMsg("error", "Choisissez une quantité");
+        if(quantity.value === "" || quantity.value === "0" || parseInt(quantity.value) < 0){
+            callbackMsg("error", "Choisissez une quantité valide ");
         }
     }
 });

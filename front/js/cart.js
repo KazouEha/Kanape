@@ -246,7 +246,11 @@ function constructLineCart(canap, line){
             "quantity" : input_quantity.value,
             "id_canape" : line.id_canape
         }
-        modifyCart(cart,kanape);
+        if(parseInt(input_quantity.value) > 0){
+            modifyCart(cart,kanape);
+        }else{
+            initCart(endInitCart);
+        }
     })
 
     let div_settings_quantity = document.createElement("div");
